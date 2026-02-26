@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useInView, animate } from "framer-motion";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 interface AnimatedCounterProps {
   target: number;
@@ -16,18 +16,24 @@ export function AnimatedCounter({
   decimals = 0,
   duration = 1.5,
 }: AnimatedCounterProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true });
+  const { ref, isInView } = useIntersectionObserver<HTMLSpanElement>({ once: true });
   const [value, setValue] = useState(0);
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
-    if (!isInView) return;
-    const controls = animate(0, target, {
-      duration,
-      ease: "easeOut",
-      onUpdate: (v) => setValue(v),
-    });
-    return () => controls.stop();
+    if (!isInView || hasAnimated.current) return;
+    hasAnimated.current = true;
+    const start = performance.now();
+    let rafId: number;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / (duration * 1000), 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(target * eased);
+      if (progress < 1) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [isInView, target, duration]);
 
   const display = decimals > 0 ? value.toFixed(decimals) : Math.round(value);

@@ -1,6 +1,6 @@
-import { useRef, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 interface StaggerGroupProps {
   children: ReactNode;
@@ -8,45 +8,46 @@ interface StaggerGroupProps {
   className?: string;
 }
 
-const container = (stagger: number) => ({
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: stagger,
-      delayChildren: 0.1,
-    },
-  },
-});
-
-export const staggerItem = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-    },
-  },
-};
-
 export function StaggerGroup({
   children,
   stagger = 0.08,
   className,
 }: StaggerGroupProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const { ref, isInView } = useIntersectionObserver({ once: true, margin: "-60px" });
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      variants={container(stagger)}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
       className={cn(className)}
+      style={{ "--stagger": `${stagger}s` } as React.CSSProperties}
+      data-in-view={isInView ? "" : undefined}
     >
       {children}
-    </motion.div>
+    </div>
+  );
+}
+
+export function StaggerItem({
+  children,
+  index,
+  className,
+}: {
+  children: ReactNode;
+  index: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "translate-y-4 opacity-0 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        "[[data-in-view]>&]:translate-y-0 [[data-in-view]>&]:opacity-100",
+        className,
+      )}
+      style={{
+        transitionDelay: `calc(0.1s + ${index} * var(--stagger, 0.08s))`,
+      }}
+    >
+      {children}
+    </div>
   );
 }

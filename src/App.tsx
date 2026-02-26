@@ -1,14 +1,38 @@
+import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { SocialProofMarquee } from "@/components/SocialProofMarquee";
-import { HowItWorks } from "@/components/HowItWorks";
-import { ProductShowcase } from "@/components/ProductShowcase";
-import { CommissionSimulator } from "@/components/CommissionSimulator";
-import { Benefits } from "@/components/Benefits";
-import { Testimonials } from "@/components/Testimonials";
-import { FAQ } from "@/components/FAQ";
-import { CTABanner } from "@/components/CTABanner";
-import { Footer } from "@/components/Footer";
+
+const HowItWorks = lazy(() =>
+  import("@/components/HowItWorks").then((m) => ({ default: m.HowItWorks })),
+);
+const ProductShowcase = lazy(() =>
+  import("@/components/ProductShowcase").then((m) => ({
+    default: m.ProductShowcase,
+  })),
+);
+const CommissionSimulator = lazy(() =>
+  import("@/components/CommissionSimulator").then((m) => ({
+    default: m.CommissionSimulator,
+  })),
+);
+const Benefits = lazy(() =>
+  import("@/components/Benefits").then((m) => ({ default: m.Benefits })),
+);
+const Testimonials = lazy(() =>
+  import("@/components/Testimonials").then((m) => ({
+    default: m.Testimonials,
+  })),
+);
+const FAQ = lazy(() =>
+  import("@/components/FAQ").then((m) => ({ default: m.FAQ })),
+);
+const CTABanner = lazy(() =>
+  import("@/components/CTABanner").then((m) => ({ default: m.CTABanner })),
+);
+const Footer = lazy(() =>
+  import("@/components/Footer").then((m) => ({ default: m.Footer })),
+);
 
 export default function App() {
   return (
@@ -17,15 +41,19 @@ export default function App() {
       <main>
         <Hero />
         <SocialProofMarquee />
-        <HowItWorks />
-        <ProductShowcase />
-        <CommissionSimulator />
-        <Benefits />
-        <Testimonials />
-        <FAQ />
-        <CTABanner />
+        <Suspense fallback={null}>
+          <HowItWorks />
+          <ProductShowcase />
+          <CommissionSimulator />
+          <Benefits />
+          <Testimonials />
+          <FAQ />
+          <CTABanner />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </>
   );
 }

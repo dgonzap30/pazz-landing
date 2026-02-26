@@ -1,6 +1,6 @@
-import { useRef, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
+import { type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
 interface RevealOnScrollProps {
   children: ReactNode;
@@ -9,27 +9,12 @@ interface RevealOnScrollProps {
   className?: string;
 }
 
-const variants = {
-  up: {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0 },
-  },
-  left: {
-    hidden: { opacity: 0, x: -24 },
-    visible: { opacity: 1, x: 0 },
-  },
-  right: {
-    hidden: { opacity: 0, x: 24 },
-    visible: { opacity: 1, x: 0 },
-  },
-  fade: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  },
-  blur: {
-    hidden: { opacity: 0, filter: "blur(10px)", scale: 0.97 },
-    visible: { opacity: 1, filter: "blur(0px)", scale: 1 },
-  },
+const hiddenStyles: Record<string, string> = {
+  up: "translate-y-6 opacity-0",
+  left: "-translate-x-6 opacity-0",
+  right: "translate-x-6 opacity-0",
+  fade: "opacity-0",
+  blur: "opacity-0 blur-[10px] scale-[0.97]",
 };
 
 export function RevealOnScroll({
@@ -38,24 +23,21 @@ export function RevealOnScroll({
   delay = 0,
   className,
 }: RevealOnScrollProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
-
-  const v = variants[direction];
+  const { ref, isInView } = useIntersectionObserver({ once: true, margin: "-60px" });
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={v.hidden}
-      animate={isInView ? v.visible : v.hidden}
-      transition={{
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-        delay,
-      }}
-      className={cn(className)}
+      className={cn(
+        "transition-[opacity,transform,filter] duration-800 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        isInView
+          ? "translate-y-0 translate-x-0 opacity-100 blur-0 scale-100"
+          : hiddenStyles[direction],
+        className,
+      )}
+      style={delay ? { transitionDelay: `${delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

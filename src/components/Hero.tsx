@@ -15,7 +15,7 @@ export function Hero() {
       {/* ─── Atmospheric background layers ─── */}
 
       {/* Primary brand glow — top-left warm light source */}
-      <div className="absolute top-[5%] left-[10%] w-[500px] h-[400px] lg:w-[900px] lg:h-[600px] rounded-full bg-brand-500/[0.09] lg:bg-brand-500/[0.06] blur-[120px] lg:blur-[200px] pointer-events-none animate-pulse-glow" />
+      <div className="absolute top-[5%] left-[10%] w-[500px] h-[400px] lg:w-[900px] lg:h-[600px] rounded-full bg-brand-500/[0.09] lg:bg-brand-500/[0.06] blur-[120px] lg:blur-[200px] pointer-events-none opacity-50" />
 
       {/* Secondary glow — subtle warm right-side fill */}
       <div className="absolute bottom-[20%] right-[5%] w-[600px] h-[400px] rounded-full bg-brand-600/[0.03] blur-[180px] pointer-events-none" />

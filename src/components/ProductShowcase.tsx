@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { RevealOnScroll } from "@/ui/RevealOnScroll";
 import { SectionHeading } from "@/ui/SectionHeading";
-import { StaggerGroup, staggerItem } from "@/ui/StaggerGroup";
+import { StaggerGroup, StaggerItem } from "@/ui/StaggerGroup";
 import { cn } from "@/lib/cn";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import {
   LayoutDashboard,
   Users,
@@ -22,12 +22,6 @@ import {
 /* ─── Types ─── */
 
 type ScreenKey = "dashboard" | "pipeline" | "quoter";
-
-const SCREEN_ORDER: Record<ScreenKey, number> = {
-  dashboard: 0,
-  pipeline: 1,
-  quoter: 2,
-};
 
 /* ─── Helpers ─── */
 
@@ -236,18 +230,12 @@ function BottomNav({
 
 function Toast({ message }: { message: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute top-16 left-4 right-4 z-50 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg text-center pointer-events-none"
-    >
+    <div className="absolute top-16 left-4 right-4 z-50 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg text-center pointer-events-none animate-fade-in">
       <div className="flex items-center justify-center gap-2">
         <Check className="w-3.5 h-3.5 text-emerald-400" strokeWidth={3} />
         {message}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -255,20 +243,12 @@ function Toast({ message }: { message: string }) {
 
 function QROverlay({ onClose }: { onClose: () => void }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+    <div
+      className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-white rounded-2xl p-6 shadow-2xl mx-6 w-full max-w-[260px]"
+      <div
+        className="bg-white rounded-2xl p-6 shadow-2xl mx-6 w-full max-w-[260px] animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="text-sm font-bold text-gray-900 text-center mb-4">
@@ -302,8 +282,8 @@ function QROverlay({ onClose }: { onClose: () => void }) {
         >
           Cerrar
         </button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -369,19 +349,12 @@ function ClientDetailDrawer({
   onClose: () => void;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="absolute inset-0 z-40 flex items-end bg-black/30"
+    <div
+      className="absolute inset-0 z-40 flex items-end bg-black/30 animate-fade-in"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full bg-white rounded-t-2xl p-5 shadow-2xl"
+      <div
+        className="w-full bg-white rounded-t-2xl p-5 shadow-2xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-4" />
@@ -433,8 +406,8 @@ function ClientDetailDrawer({
         >
           Cerrar
         </button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -451,8 +424,7 @@ function DashboardContent({
   onShowMore: () => void;
   onSelectClient: (name: string, stage: number) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const { ref, isInView: inView } = useIntersectionObserver({ once: true, margin: "-40px" });
   const goalAmount = useCountUp(25000, inView);
   const earnedAmount = useCountUp(20000, inView, 1.4);
 
@@ -484,15 +456,9 @@ function DashboardContent({
 
           {/* Animated progress bar */}
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-brand-500 rounded-full"
-              initial={{ width: 0 }}
-              animate={inView ? { width: "80%" } : { width: 0 }}
-              transition={{
-                duration: 1.2,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.3,
-              }}
+            <div
+              className="h-full bg-brand-500 rounded-full transition-[width] duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] delay-300"
+              style={{ width: inView ? "80%" : "0%" }}
             />
           </div>
           <p className="text-sm text-gray-500">
@@ -538,33 +504,28 @@ function DashboardContent({
             uppercase
             onClick={() => onSelectClient("Mariblanca Sabas Alomá", 1)}
           />
-          <AnimatePresence>
-            {showMore && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="space-y-3 overflow-hidden"
-              >
-                <ClientCard
-                  name="Transportes del Valle"
-                  subtitle="Comité de crédito en revisión"
-                  uppercase
-                  onClick={() =>
-                    onSelectClient("Transportes del Valle", 2)
-                  }
-                />
-                <ClientCard
-                  name="Jorge Méndez Ruiz"
-                  subtitle="Contratación pendiente"
-                  uppercase
-                  showBell={false}
-                  onClick={() => onSelectClient("Jorge Méndez Ruiz", 3)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className={cn(
+            "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            showMore ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          )}>
+            <div className="space-y-3 overflow-hidden">
+              <ClientCard
+                name="Transportes del Valle"
+                subtitle="Comité de crédito en revisión"
+                uppercase
+                onClick={() =>
+                  onSelectClient("Transportes del Valle", 2)
+                }
+              />
+              <ClientCard
+                name="Jorge Méndez Ruiz"
+                subtitle="Contratación pendiente"
+                uppercase
+                showBell={false}
+                onClick={() => onSelectClient("Jorge Méndez Ruiz", 3)}
+              />
+            </div>
+          </div>
           {!showMore && (
             <button
               onClick={onShowMore}
@@ -644,16 +605,9 @@ function PipelineContent({
         </div>
 
         {/* Tab content */}
-        <AnimatePresence mode="wait">
+        <div className="transition-opacity duration-200">
           {activeTab === "proceso" && (
-            <motion.div
-              key="proceso"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-5"
-            >
+            <div className="space-y-5">
               {/* Precalificación */}
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
@@ -752,18 +706,11 @@ function PipelineContent({
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {activeTab === "ganadas" && (
-            <motion.div
-              key="ganadas"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
+            <div className="space-y-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Agosto 2025
               </p>
@@ -811,18 +758,11 @@ function PipelineContent({
                   $520,000
                 </span>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {activeTab === "perdidas" && (
-            <motion.div
-              key="perdidas"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
+            <div className="space-y-4">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Agosto 2025
               </p>
@@ -847,9 +787,9 @@ function PipelineContent({
                   Solo 1 oportunidad perdida este mes.
                 </p>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );
@@ -972,13 +912,9 @@ function PhoneApp({
     stage: number;
   } | null>(null);
   const toastTimeout = useRef<number | null>(null);
-  const prevScreen = useRef(screen);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const direction =
-    SCREEN_ORDER[screen] >= SCREEN_ORDER[prevScreen.current] ? 1 : -1;
   useEffect(() => {
-    prevScreen.current = screen;
     scrollRef.current?.scrollTo({ top: 0 });
   }, [screen]);
 
@@ -1002,51 +938,35 @@ function PhoneApp({
     <div className="flex flex-col h-[640px] lg:h-[660px] relative overflow-hidden">
       {/* Screen content */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={screen}
-            initial={{ opacity: 0, x: direction * 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -20 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {screen === "dashboard" && (
-              <DashboardContent
-                onToast={showToast}
-                showMore={showMoreClients}
-                onShowMore={() => setShowMoreClients(true)}
-                onSelectClient={openClientDrawer}
-              />
-            )}
-            {screen === "pipeline" && (
-              <PipelineContent onSelectClient={openClientDrawer} />
-            )}
-            {screen === "quoter" && (
-              <QuoterContent
-                onShowQR={() => setShowQR(true)}
-                onToast={showToast}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {screen === "dashboard" && (
+          <DashboardContent
+            onToast={showToast}
+            showMore={showMoreClients}
+            onShowMore={() => setShowMoreClients(true)}
+            onSelectClient={openClientDrawer}
+          />
+        )}
+        {screen === "pipeline" && (
+          <PipelineContent onSelectClient={openClientDrawer} />
+        )}
+        {screen === "quoter" && (
+          <QuoterContent
+            onShowQR={() => setShowQR(true)}
+            onToast={showToast}
+          />
+        )}
       </div>
 
       {/* Overlays */}
-      <AnimatePresence>
-        {clientDrawer && (
-          <ClientDetailDrawer
-            name={clientDrawer.name}
-            currentStage={clientDrawer.stage}
-            onClose={() => setClientDrawer(null)}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {showQR && <QROverlay onClose={() => setShowQR(false)} />}
-      </AnimatePresence>
-      <AnimatePresence>
-        {toast && <Toast message={toast} />}
-      </AnimatePresence>
+      {clientDrawer && (
+        <ClientDetailDrawer
+          name={clientDrawer.name}
+          currentStage={clientDrawer.stage}
+          onClose={() => setClientDrawer(null)}
+        />
+      )}
+      {showQR && <QROverlay onClose={() => setShowQR(false)} />}
+      {toast && <Toast message={toast} />}
 
       {/* Navigation */}
       <BottomNav active={screen} onNavigate={onNavigate} />
@@ -1093,8 +1013,7 @@ export function ProductShowcase() {
   const [centerScreen, setCenterScreen] = useState<ScreenKey>("dashboard");
   const [rightScreen, setRightScreen] = useState<ScreenKey>("quoter");
 
-  const cascadeRef = useRef<HTMLDivElement>(null);
-  const cascadeInView = useInView(cascadeRef, { once: true, margin: "-80px" });
+  const { ref: cascadeRef, isInView: cascadeInView } = useIntersectionObserver({ once: true, margin: "-80px" });
 
   return (
     <section
@@ -1139,19 +1058,11 @@ export function ProductShowcase() {
         {/* Desktop: phone cascade — fans out from a single stacked phone */}
         <div ref={cascadeRef} className="relative hidden lg:block">
           {/* Warm glow — expands as phones spread */}
-          <motion.div
-            className="absolute bottom-[8%] left-1/2 -translate-x-1/2 h-[300px] rounded-full bg-brand-500/[0.04] blur-[150px] pointer-events-none"
-            initial={{ width: 200, opacity: 0 }}
-            animate={
-              cascadeInView
-                ? { width: 900, opacity: 1 }
-                : { width: 200, opacity: 0 }
-            }
-            transition={{
-              duration: 1.6,
-              ease: [0.16, 1, 0.3, 1],
-              delay: 0.3,
-            }}
+          <div
+            className={cn(
+              "absolute bottom-[8%] left-1/2 -translate-x-1/2 h-[300px] rounded-full bg-brand-500/[0.04] blur-[150px] pointer-events-none transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)] delay-300",
+              cascadeInView ? "w-[900px] opacity-100" : "w-[200px] opacity-0"
+            )}
           />
 
           {/* Perspective container */}
@@ -1160,64 +1071,52 @@ export function ProductShowcase() {
             style={{ perspective: "1400px" }}
           >
             {/* Left phone */}
-            <motion.div
-              initial={{ opacity: 0, x: 390, rotateY: 0, scale: 1 }}
-              animate={
-                cascadeInView
-                  ? { opacity: 1, x: 0, rotateY: 6, scale: 0.9 }
-                  : { opacity: 0, x: 390, rotateY: 0, scale: 1 }
-              }
-              transition={{
-                duration: 1.2,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.4,
+            <div
+              className={cn(
+                "relative z-0 transition-all duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                cascadeInView ? "opacity-100" : "opacity-0 translate-x-[390px]"
+              )}
+              style={{
+                transitionDelay: "0.4s",
+                transform: cascadeInView
+                  ? "rotateY(6deg) scale(0.9)"
+                  : "translateX(390px) rotateY(0deg) scale(1)",
               }}
-              className="relative z-0"
             >
               <PhoneMockup>
                 <PhoneApp screen={leftScreen} onNavigate={setLeftScreen} />
               </PhoneMockup>
-            </motion.div>
+            </div>
 
             {/* Center phone */}
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.96 }}
-              animate={
-                cascadeInView
-                  ? { opacity: 1, y: 0, scale: 1 }
-                  : { opacity: 0, y: 30, scale: 0.96 }
-              }
-              transition={{
-                duration: 0.8,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0,
-              }}
-              className="relative z-10"
+            <div
+              className={cn(
+                "relative z-10 transition-all duration-[0.8s] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                cascadeInView ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-[30px] scale-[0.96]"
+              )}
             >
               <PhoneMockup>
                 <PhoneApp screen={centerScreen} onNavigate={setCenterScreen} />
               </PhoneMockup>
-            </motion.div>
+            </div>
 
             {/* Right phone */}
-            <motion.div
-              initial={{ opacity: 0, x: -390, rotateY: 0, scale: 1 }}
-              animate={
-                cascadeInView
-                  ? { opacity: 1, x: 0, rotateY: -6, scale: 0.9 }
-                  : { opacity: 0, x: -390, rotateY: 0, scale: 1 }
-              }
-              transition={{
-                duration: 1.2,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.45,
+            <div
+              className={cn(
+                "relative z-0 transition-all duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                cascadeInView ? "opacity-100" : "opacity-0 -translate-x-[390px]"
+              )}
+              style={{
+                transitionDelay: "0.45s",
+                transform: cascadeInView
+                  ? "rotateY(-6deg) scale(0.9)"
+                  : "translateX(-390px) rotateY(0deg) scale(1)",
               }}
-              className="relative z-0"
             >
               <PhoneMockup>
                 <PhoneApp screen={rightScreen} onNavigate={setRightScreen} />
               </PhoneMockup>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -1226,10 +1125,10 @@ export function ProductShowcase() {
           stagger={0.1}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 mt-12 sm:mt-16 lg:mt-24"
         >
-          {FEATURES.map((f) => {
+          {FEATURES.map((f, i) => {
             const Icon = f.icon;
             return (
-              <motion.div key={f.title} variants={staggerItem}>
+              <StaggerItem key={f.title} index={i}>
                 <div className="text-center">
                   <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-tint border border-edge mb-4">
                     <Icon className="w-5 h-5 text-brand-500" />
@@ -1241,7 +1140,7 @@ export function ProductShowcase() {
                     {f.description}
                   </p>
                 </div>
-              </motion.div>
+              </StaggerItem>
             );
           })}
         </StaggerGroup>

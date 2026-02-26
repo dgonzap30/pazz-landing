@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -60,26 +59,23 @@ export function Accordion({
           />
         </div>
       </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <p
-              className={cn(
-                "pb-4 sm:pb-6 leading-relaxed text-sm sm:text-[0.938rem]",
-                dark ? "text-neutral-400" : "text-neutral-500",
-              )}
-            >
-              {answer}
-            </p>
-          </motion.div>
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
-      </AnimatePresence>
+      >
+        <div className="overflow-hidden">
+          <p
+            className={cn(
+              "pb-4 sm:pb-6 leading-relaxed text-sm sm:text-[0.938rem]",
+              dark ? "text-neutral-400" : "text-neutral-500",
+            )}
+          >
+            {answer}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

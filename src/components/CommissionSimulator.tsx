@@ -5,7 +5,6 @@ import { RevealOnScroll } from "@/ui/RevealOnScroll";
 import { Button } from "@/ui/Button";
 import { Trophy, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { motion, AnimatePresence } from "framer-motion";
 
 const ACCUMULATED_MIN = 0;
 const ACCUMULATED_MAX = 15_000_000;
@@ -59,30 +58,19 @@ export function CommissionSimulator() {
                     <span className="text-xs font-medium text-neutral-500 uppercase tracking-wider">
                       Tu nivel actual
                     </span>
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={level.name}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.2 }}
-                        className="text-xs font-bold text-brand-400"
-                      >
-                        {level.name} · {(level.rate * 100).toFixed(1)}%
-                      </motion.span>
-                    </AnimatePresence>
+                    <span className="text-xs font-bold text-brand-400 transition-all duration-200">
+                      {level.name} · {(level.rate * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <div className="relative h-2.5 rounded-full bg-neutral-800 overflow-hidden">
-                    <motion.div
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400"
-                      animate={{ width: `${accumulatedPercent}%` }}
-                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 via-brand-500 to-brand-400 transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      style={{ width: `${accumulatedPercent}%` }}
                     />
                     {/* Shimmer on the fill */}
-                    <motion.div
-                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                      animate={{ width: `${accumulatedPercent}%` }}
-                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+                    <div
+                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      style={{ width: `${accumulatedPercent}%` }}
                     />
                     {/* Level boundary markers */}
                     <div
@@ -214,18 +202,9 @@ export function CommissionSimulator() {
                   <span className="relative text-xs text-neutral-500 uppercase tracking-wider font-semibold mb-1">
                     Nivel
                   </span>
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={level.name}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2 }}
-                      className="relative text-2xl font-display font-bold mb-1"
-                    >
-                      {level.name}
-                    </motion.span>
-                  </AnimatePresence>
+                  <span className="relative text-2xl font-display font-bold mb-1 transition-all duration-200">
+                    {level.name}
+                  </span>
                   <span className="relative text-sm text-neutral-500 mb-5 sm:mb-8">
                     {(level.rate * 100).toFixed(1)}% de comisión
                   </span>
@@ -235,19 +214,9 @@ export function CommissionSimulator() {
                   <span className="relative text-xs text-neutral-500 uppercase tracking-wider font-semibold mb-3">
                     Comisión del mes en curso
                   </span>
-                  <motion.span
-                    key={commission}
-                    initial={{ scale: 1.08, opacity: 0.7 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                      type: "spring",
-                      bounce: 0.3,
-                      duration: 0.4,
-                    }}
-                    className="relative text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold gradient-text tabular-nums tracking-tight"
-                  >
+                  <span className="relative text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold gradient-text tabular-nums tracking-tight transition-all duration-300">
                     {formatCurrency(commission)}
-                  </motion.span>
+                  </span>
 
                   <Button variant="primary" size="lg" className="relative w-full mt-6 sm:mt-8 lg:mt-10 group">
                     Regístrate como partner

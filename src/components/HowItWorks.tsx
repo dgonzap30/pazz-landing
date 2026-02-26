@@ -1,8 +1,7 @@
 import { HOW_IT_WORKS } from "@/lib/constants";
 import { SectionHeading } from "@/ui/SectionHeading";
 import { RevealOnScroll } from "@/ui/RevealOnScroll";
-import { StaggerGroup, staggerItem } from "@/ui/StaggerGroup";
-import { motion } from "framer-motion";
+import { StaggerGroup, StaggerItem } from "@/ui/StaggerGroup";
 
 export function HowItWorks() {
   return (
@@ -26,10 +25,10 @@ export function HowItWorks() {
           </div>
 
           <StaggerGroup stagger={0.12} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5">
-            {HOW_IT_WORKS.map((step) => {
+            {HOW_IT_WORKS.map((step, i) => {
               const Icon = step.icon;
               return (
-                <motion.div key={step.number} variants={staggerItem}>
+                <StaggerItem key={step.number} index={i}>
                   <div className="gradient-border-card group relative p-7 lg:p-9 rounded-2xl h-full">
                     {/* Step number watermark */}
                     <span className="absolute top-3 right-4 text-[5rem] font-display font-black text-neutral-700/20 leading-none select-none pointer-events-none">
@@ -47,7 +46,7 @@ export function HowItWorks() {
                       {step.description}
                     </p>
                   </div>
-                </motion.div>
+                </StaggerItem>
               );
             })}
           </StaggerGroup>

@@ -1,8 +1,7 @@
 import { BENEFITS } from "@/lib/constants";
 import { SectionHeading } from "@/ui/SectionHeading";
 import { RevealOnScroll } from "@/ui/RevealOnScroll";
-import { StaggerGroup, staggerItem } from "@/ui/StaggerGroup";
-import { motion } from "framer-motion";
+import { StaggerGroup, StaggerItem } from "@/ui/StaggerGroup";
 
 export function Benefits() {
   return (
@@ -19,10 +18,10 @@ export function Benefits() {
         </RevealOnScroll>
 
         <StaggerGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-          {BENEFITS.map((benefit) => {
+          {BENEFITS.map((benefit, i) => {
             const Icon = benefit.icon;
             return (
-              <motion.div key={benefit.title} variants={staggerItem}>
+              <StaggerItem key={benefit.title} index={i}>
                 <div className="gradient-border-card group relative p-5 sm:p-6 lg:p-7 rounded-2xl h-full">
                   {/* Hover glow */}
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-500/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -37,7 +36,7 @@ export function Benefits() {
                     {benefit.description}
                   </p>
                 </div>
-              </motion.div>
+              </StaggerItem>
             );
           })}
         </StaggerGroup>

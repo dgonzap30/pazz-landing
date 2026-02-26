@@ -180,12 +180,17 @@
 
 /* ─── Glass card ─── */
 .glass-card {
-  background: rgba(21, 21, 23, 0.6);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(21, 21, 23, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+}
+@media (min-width: 768px) {
+  .glass-card {
+    background: rgba(21, 21, 23, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
 }
 .glass-card:hover {
   border-color: rgba(255, 255, 255, 0.14);
@@ -309,8 +314,8 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--color-brand-500);
   cursor: pointer;
@@ -318,19 +323,39 @@ input[type="range"]::-webkit-slider-thumb {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+@media (pointer: coarse) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 0 0 4px rgba(231, 94, 41, 0.2), 0 2px 12px rgba(231, 94, 41, 0.35);
+  }
+
+  input[type="range"] {
+    height: 6px;
+  }
+}
+
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
   box-shadow: 0 0 0 6px rgba(231, 94, 41, 0.2), 0 2px 12px rgba(231, 94, 41, 0.4);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--color-brand-500);
   cursor: pointer;
   border: none;
   box-shadow: 0 0 0 4px rgba(231, 94, 41, 0.15), 0 2px 8px rgba(231, 94, 41, 0.3);
+}
+
+@media (pointer: coarse) {
+  input[type="range"]::-moz-range-thumb {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 0 0 4px rgba(231, 94, 41, 0.2), 0 2px 12px rgba(231, 94, 41, 0.35);
+  }
 }
 
 /* ─── Hidden scrollbar (for phone demos) ─── */

@@ -1,8 +1,7 @@
 import { RevealOnScroll } from "@/ui/RevealOnScroll";
 import { SectionHeading } from "@/ui/SectionHeading";
 import { Star } from "lucide-react";
-import { StaggerGroup, staggerItem } from "@/ui/StaggerGroup";
-import { motion } from "framer-motion";
+import { StaggerGroup, StaggerItem } from "@/ui/StaggerGroup";
 
 interface Testimonial {
   quote: string;
@@ -56,8 +55,8 @@ export function Testimonials() {
         </RevealOnScroll>
 
         <StaggerGroup stagger={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5">
-          {TESTIMONIALS.map((t) => (
-            <motion.div key={t.name} variants={staggerItem}>
+          {TESTIMONIALS.map((t, i) => (
+            <StaggerItem key={t.name} index={i}>
               <div className="glass-card group relative p-5 sm:p-6 lg:p-8 rounded-2xl h-full flex flex-col">
                 {/* Large quote mark */}
                 <span
@@ -100,7 +99,7 @@ export function Testimonials() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </StaggerItem>
           ))}
         </StaggerGroup>
       </div>
