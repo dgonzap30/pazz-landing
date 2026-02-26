@@ -273,6 +273,32 @@
   }
 }
 
+/* ─── Nav indicator — luminous ember ─── */
+.nav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), var(--color-brand-400) 40%, var(--color-brand-500));
+  box-shadow:
+    0 0 3px 0 var(--color-brand-400),
+    0 0 8px 0 rgba(255, 110, 30, 0.5);
+}
+
+.nav-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 110, 30, 0.35), transparent 70%);
+  animation: nav-dot-breathe 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes nav-dot-breathe {
+  0%, 100% { opacity: 0.4; scale: 0.7; }
+  50% { opacity: 1; scale: 1.15; }
+}
+
 /* ─── Section divider ─── */
 .section-divider {
   position: relative;
@@ -477,6 +503,17 @@ input[type="range"]::-moz-range-thumb {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* ─── Nav dot — light mode: warm shadow instead of glow ─── */
+  .nav-dot {
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), var(--color-brand-500) 45%, var(--color-brand-600));
+    box-shadow:
+      0 0 3px 0 rgba(231, 94, 41, 0.4),
+      0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  }
+  .nav-dot::after {
+    background: radial-gradient(circle, rgba(231, 94, 41, 0.15), transparent 70%);
   }
 
   /* ─── Scrollbar — light ─── */

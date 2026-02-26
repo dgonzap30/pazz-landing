@@ -83,14 +83,9 @@ export function Testimonials() {
 
                 {/* Author */}
                 <div className="flex items-center gap-3 pt-4 sm:pt-6 border-t border-edge">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    loading="lazy"
-                    width={48}
-                    height={48}
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-brand-500/20 shrink-0 brightness-90"
-                  />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center ring-2 ring-brand-500/20 shrink-0">
+                    <span className="text-sm sm:text-base font-bold text-white select-none">{t.initials}</span>
+                  </div>
                   <div>
                     <p className="text-sm font-semibold text-fg">
                       {t.name}

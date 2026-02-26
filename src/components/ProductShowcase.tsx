@@ -1023,7 +1023,7 @@ export function ProductShowcase() {
 
   return (
     <section
-      id="la-app"
+      id="el-app"
       className="section-divider relative py-20 sm:py-24 lg:py-36 bg-neutral-950 overflow-x-clip"
     >
       {/* Subtle depth gradient */}

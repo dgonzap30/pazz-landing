@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/ui/Button";
@@ -11,6 +11,106 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const activeId = useScrollSpy(sectionIds);
+
+  const navRef = useRef<HTMLDivElement>(null);
+  const linkRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
+  const dotRef = useRef<HTMLSpanElement>(null);
+  const [indicator, setIndicator] = useState<{ left: number } | null>(null);
+  const prevIndicator = useRef<{ left: number; idx: number } | null>(null);
+
+  const measureIndicator = useCallback(() => {
+    if (!activeId || !navRef.current) {
+      setIndicator(null);
+      return;
+    }
+    const linkEl = linkRefs.current.get(activeId);
+    if (!linkEl) return;
+    const navRect = navRef.current.getBoundingClientRect();
+    const linkRect = linkEl.getBoundingClientRect();
+    setIndicator({ left: linkRect.left - navRect.left + linkRect.width / 2 });
+  }, [activeId]);
+
+  useEffect(measureIndicator, [measureIndicator]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measureIndicator);
+    return () => window.removeEventListener("resize", measureIndicator);
+  }, [measureIndicator]);
+
+  // Hop the dot through each intermediate link with parabolic arcs
+  const runningAnim = useRef<Animation | null>(null);
+
+  useLayoutEffect(() => {
+    const dot = dotRef.current;
+    const nav = navRef.current;
+
+    if (!indicator || !dot || !nav) {
+      prevIndicator.current = null;
+      return;
+    }
+
+    const currIdx = sectionIds.indexOf(activeId);
+    const prev = prevIndicator.current;
+    prevIndicator.current = { left: indicator.left, idx: currIdx };
+
+    if (!prev || prev.idx === currIdx || currIdx === -1) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const centers = sectionIds.map((id) => {
+      const el = linkRefs.current.get(id);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return r.left - navRect.left + r.width / 2;
+    });
+
+    const dir = prev.idx < currIdx ? 1 : -1;
+    const stops: number[] = [];
+    for (let i = prev.idx; ; i += dir) {
+      const c = centers[i];
+      if (c === null) return;
+      stops.push(c);
+      if (i === currIdx) break;
+    }
+
+    const numHops = stops.length - 1;
+    if (numHops < 1) return;
+
+    // All movement via transform only (GPU composited, no layout thrashing).
+    // Positions are relative to indicator.left (the final resting X).
+    const finalX = stops[numHops];
+    const stepsPerHop = 12;
+    const totalSteps = numHops * stepsPerHop;
+    const peakH = 8;
+    const keyframes: Keyframe[] = [];
+
+    for (let h = 0; h < numHops; h++) {
+      const fromX = stops[h];
+      const toX = stops[h + 1];
+      const hopH = peakH * Math.pow(0.8, h); // decreasing energy each bounce
+      const last = h === numHops - 1;
+
+      for (let s = 0; s <= (last ? stepsPerHop : stepsPerHop - 1); s++) {
+        const t = s / stepsPerHop;
+        const x = fromX + (toX - fromX) * t - finalX;
+        const y = -4 * hopH * t * (1 - t); // parabolic arc
+        const isEnd = last && s === stepsPerHop;
+
+        keyframes.push({
+          transform: isEnd
+            ? "translateX(-50%)"
+            : `translateX(calc(-50% + ${x.toFixed(1)}px)) translateY(${y.toFixed(1)}px)`,
+          offset: (h * stepsPerHop + s) / totalSteps,
+        });
+      }
+    }
+
+    runningAnim.current?.cancel();
+    runningAnim.current = dot.animate(keyframes, {
+      duration: Math.min(numHops * 180, 700),
+      easing: "linear",
+      fill: "none",
+    });
+  }, [indicator, activeId]);
 
   useEffect(() => {
     let ticking = false;
@@ -56,24 +156,40 @@ export function Navbar() {
         </a>
 
         {/* Desktop nav */}
-        <div className="hidden lg:flex items-center gap-0.5">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200",
-                activeId === link.href.replace("#", "")
-                  ? "text-fg"
-                  : "text-neutral-400 hover:text-fg",
-              )}
-            >
-              {link.label}
-              {activeId === link.href.replace("#", "") && (
-                <span className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-1 h-1 rounded-full bg-brand-500 transition-all duration-300" />
-              )}
-            </a>
-          ))}
+        <div ref={navRef} className="hidden lg:flex items-center gap-0.5 relative">
+          {NAV_LINKS.map((link) => {
+            const id = link.href.replace("#", "");
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                ref={(el) => {
+                  if (el) linkRefs.current.set(id, el);
+                }}
+                className={cn(
+                  "relative px-3.5 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
+                  activeId === id
+                    ? "text-fg"
+                    : "text-neutral-400 hover:text-fg",
+                )}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+
+          {/* Hopping dot */}
+          <span
+            ref={dotRef}
+            className={cn(
+              "nav-dot absolute -bottom-1 transition-[opacity,scale] duration-300",
+              indicator ? "opacity-100 scale-100" : "opacity-0 scale-0",
+            )}
+            style={{
+              left: indicator ? indicator.left : 0,
+              transform: "translateX(-50%)",
+            }}
+          />
         </div>
 
         <div className="flex items-center gap-3">
