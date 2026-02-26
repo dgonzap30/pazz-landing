@@ -23,6 +23,12 @@ export function AnimatedCounter({
   useEffect(() => {
     if (!isInView || hasAnimated.current) return;
     hasAnimated.current = true;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setValue(target);
+      return;
+    }
+
     const start = performance.now();
     let rafId: number;
     const tick = (now: number) => {

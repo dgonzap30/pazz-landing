@@ -36,6 +36,12 @@ function useCountUp(target: number, inView: boolean, duration = 1.2): number {
   useEffect(() => {
     if (!inView || hasAnimated.current) return;
     hasAnimated.current = true;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setValue(target);
+      return;
+    }
+
     const start = Date.now();
     let rafId: number;
     const tick = () => {
@@ -505,10 +511,10 @@ function DashboardContent({
             onClick={() => onSelectClient("Mariblanca Sabas Alomá", 1)}
           />
           <div className={cn(
-            "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            showMore ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+            "overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            showMore ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
           )}>
-            <div className="space-y-3 overflow-hidden">
+            <div className="space-y-3">
               <ClientCard
                 name="Transportes del Valle"
                 subtitle="Comité de crédito en revisión"

@@ -61,11 +61,11 @@ export function Accordion({
       </button>
       <div
         className={cn(
-          "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
-          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+          "overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
+          isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0",
         )}
       >
-        <div className="overflow-hidden">
+        <div>
           <p
             className={cn(
               "pb-4 sm:pb-6 leading-relaxed text-sm sm:text-[0.938rem]",

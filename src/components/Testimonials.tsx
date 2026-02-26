@@ -44,7 +44,7 @@ export function Testimonials() {
       {/* Subtle depth gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-surface-dark via-neutral-950 to-surface-dark pointer-events-none" />
       {/* Ambient glow */}
-      <div className="absolute top-0 right-[20%] w-[600px] h-[400px] rounded-full bg-brand-500/[0.02] blur-[180px] pointer-events-none" />
+      <div className="absolute top-0 right-[20%] w-[600px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(255,110,30,0.02)_0%,_transparent_70%)] lg:bg-brand-500/[0.02] lg:blur-[180px] pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <RevealOnScroll>

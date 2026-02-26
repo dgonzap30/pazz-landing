@@ -13,8 +13,14 @@ export function Navbar() {
   const activeId = useScrollSpy(sectionIds);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        ticking = false;
+      });
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -30,9 +36,9 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 inset-x-0 z-50 transition-all duration-500",
+        "fixed top-0 inset-x-0 z-50 transition-[background-color,border-color,box-shadow] duration-500",
         scrolled
-          ? "bg-neutral-950/70 backdrop-blur-2xl border-b border-edge shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+          ? "bg-neutral-950/95 lg:bg-neutral-950/70 lg:backdrop-blur-2xl border-b border-edge shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
           : "bg-transparent",
       )}
     >
@@ -91,7 +97,7 @@ export function Navbar() {
       {/* Mobile menu — always mounted, visibility toggled via CSS */}
       <div
         className={cn(
-          "lg:hidden fixed inset-0 top-16 sm:top-18 bg-neutral-950/98 backdrop-blur-2xl z-40 transition-opacity duration-300",
+          "lg:hidden fixed inset-0 top-16 sm:top-18 bg-neutral-950/[0.98] z-40 transition-opacity duration-300",
           mobileOpen
             ? "opacity-100"
             : "opacity-0 pointer-events-none",

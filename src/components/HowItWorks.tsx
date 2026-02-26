@@ -7,7 +7,7 @@ export function HowItWorks() {
   return (
     <section id="como-funciona" className="section-divider relative py-16 sm:py-20 lg:py-32 bg-surface-dark overflow-x-clip">
       {/* Subtle ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-brand-500/[0.02] blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(255,110,30,0.02)_0%,_transparent_70%)] lg:bg-brand-500/[0.02] lg:blur-[160px] pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <RevealOnScroll>
